@@ -1,4 +1,5 @@
 import unittest
+import os
 import time
 from datetime import datetime
 from selenium import webdriver
@@ -15,16 +16,32 @@ class LinkedInTest(unittest.TestCase):
         self.driver = webdriver.Chrome(service=self.service)
         self.driver.maximize_window()  # Maximizar la ventana del navegador para evitar problemas de visibilidad
 
+        # Definir el nombre de la carpeta para las capturas de pantalla
+        self.screenshot_folder = "screenshots"
+
+        # Crear la carpeta si no existe
+        if not os.path.exists(self.screenshot_folder):
+            os.makedirs(self.screenshot_folder)
+
     def tearDown(self):
         self.driver.quit()
 
     def test_login_and_post(self):
+        # Tomar captura de pantalla antes del inicio de sesión
+        self.take_screenshot("screenshot_before_login")
+
         # Iniciar sesión en LinkedIn
         self.login_to_linkedin()
+
+        # Tomar captura de pantalla después del inicio de sesión
+        self.take_screenshot("screenshot_after_login")
 
         # Publicar un mensaje
         message = "Holaaaaa, cómo están"
         self.post_message(message)
+
+        # Tomar captura de pantalla después de la publicación
+        self.take_screenshot("screenshot_after_posting")
 
         # Comprobar si se publicó correctamente
         if self.is_message_published(message):
@@ -80,6 +97,15 @@ class LinkedInTest(unittest.TestCase):
             return True
         except:
             return False
+
+    def take_screenshot(self, name):
+        # Generar nombre de archivo con la fecha y hora actual
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"{self.screenshot_folder}/{name}_{timestamp}.png"
+
+        # Tomar captura de pantalla y guardarla con el nombre de archivo generado
+        self.driver.save_screenshot(filename)
+        print(f"Screenshot saved: {filename}")
 
 if __name__ == "__main__":
     unittest.main()
