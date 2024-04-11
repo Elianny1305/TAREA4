@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 
 class LinkedInTest(unittest.TestCase):
@@ -66,9 +67,11 @@ class LinkedInTest(unittest.TestCase):
         post_input = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, "ql-editor")))
         post_input.send_keys(message)
 
-        # Hacer clic en el botón de publicar
-        post_button = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Publicar")]')))
-        post_button.click()
+        # Enviar el mensaje pulsando la tecla "Enter"
+        post_input.send_keys(Keys.ENTER)
+
+        # Esperar un momento para permitir que el mensaje se publique correctamente
+        time.sleep(3)
 
     def is_message_published(self, message):
         # Esperar hasta que aparezca el mensaje publicado
